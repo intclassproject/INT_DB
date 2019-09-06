@@ -10,7 +10,8 @@ RUN ln -s /bin/true /sbin/init
 
 RUN apt-get update
 RUN apt-get install -y mongodb
-
+# Define mountable directories.
+#VOLUME ["/data/db"]
 RUN mkdir -p /data/db
 
 EXPOSE 27017
