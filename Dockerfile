@@ -1,18 +1,31 @@
+#
+# MongoDB Dockerfile
+#
+# https://github.com/dockerfile/mongodb
+#
 
-FROM ubuntu
-RUN apt-get update && apt-get install -y curl
-RUN apt-get install -y gnupg2
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv E52529D4
-RUN echo 'echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" > /etc/apt/sources.list.d/mongodb-org-4.0.list'
+# Pull base image.
+FROM dockerfile/ubuntu
 
-RUN dpkg-divert --local --rename --add /sbin/init
-RUN ln -s /bin/true /sbin/init
+# Install MongoDB.
+RUN \
+  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && \
+  echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' > /etc/apt/sources.list.d/mongodb.list && \
+  apt-get update && \
+  apt-get install -y mongodb-org && \
+  rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update
-RUN apt-get install -y mongodb
 # Define mountable directories.
-#VOLUME ["/data/db"]
-RUN mkdir -p /data/db
+VOLUME ["/data/db"]
 
+# Define working directory.
+WORKDIR /data
+
+# Define default command.
+CMD ["mongod"]
+
+# Expose ports.
+#   - 27017: process
+#   - 28017: http
 EXPOSE 27017
-CMD ["usr/bin/mongod", "--smallfiles"]
+EXPOSE 28017
