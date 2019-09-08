@@ -58,15 +58,6 @@ RUN set -ex; \
 RUN mkdir /docker-entrypoint-initdb.d
 
 ENV GPG_KEYS 2930ADAE8CAF5059EE73BB4B58712A2291FA4AD5
-RUN set -ex; \
-	export GNUPGHOME="$(mktemp -d)"; \
-	for key in $GPG_KEYS; do \
-		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
-	done; \
-	gpg --batch --export $GPG_KEYS > /etc/apt/trusted.gpg.d/mongodb.gpg; \
-	command -v gpgconf && gpgconf --kill all || :; \
-	rm -r "$GNUPGHOME"; \
-	apt-key list
 
 # Allow build-time overrides (eg. to build image with MongoDB Enterprise version)
 # Options for MONGO_PACKAGE: mongodb-org OR mongodb-enterprise
@@ -83,7 +74,7 @@ RUN echo "deb http://$MONGO_REPO/apt/ubuntu xenial/${MONGO_PACKAGE%-unstable}/$M
 
 RUN set -x \
 	&& apt-get update \
-	&& apt-get install -y \
+	&& apt-get install -y --allow-unauthenticated \
 		${MONGO_PACKAGE}=$MONGO_VERSION \
 		${MONGO_PACKAGE}-server=$MONGO_VERSION \
 		${MONGO_PACKAGE}-shell=$MONGO_VERSION \
@@ -98,7 +89,9 @@ RUN mkdir -p /data/db /data/configdb \
 VOLUME /data/db /data/configdb
 
 COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["docker-entrypoint.sh"]
+RUN chmod 777 /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 27017
 CMD ["mongod"]
+
