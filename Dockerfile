@@ -1,3 +1,4 @@
+# docker run -d -p 27017:27017 --name mongodb mongo:test
 FROM ubuntu:xenial
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
