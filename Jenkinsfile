@@ -33,7 +33,7 @@ agent { label 'docker' }
    steps {
     script {
      sh "mkdir -p ${storage}/dev"
-     sh "docker save intapi:${Commit_Id} > ${storage}/dev/intapi_${Commit_Id}.tar"
+     sh "docker save intdb:${Commit_Id} > ${storage}/dev/intdb_${Commit_Id}.tar"
      }
     }
    }
