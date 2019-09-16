@@ -50,7 +50,7 @@ def NextVersion
 
                          }
                          catch (exception) {
-                             println "Docker image build is failed"
+                             println "Docker image build failed"
                              currentBuild.result = 'FAILURE'
                              throw exception
                          }
@@ -68,7 +68,7 @@ def NextVersion
                      try{
                          withCredentials([usernamePassword(credentialsId: 'docker-cred-id', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                                 sh "docker login -u=${DOCKER_USERNAME} -p=${DOCKER_PASSWORD}"
-                                sh "docker tag DB:$BuildVersion devopsint/dev:db_$BuildVersion"
+                                sh "docker tag db:$BuildVersion devopsint/dev:db_$BuildVersion"
                                 sh "docker push devopsint/dev:db_$BuildVersion"
                                 
                          }
