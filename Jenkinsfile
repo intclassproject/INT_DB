@@ -45,12 +45,12 @@ def NextVersion
                  script {
                      dir('INT_DB') {
                          try {
-                           docker.build("DB:$BuildVersion")
+                           docker.build("db:$BuildVersion")
                            println("Docker image is successfully built")  
 
                          }
                          catch (exception) {
-                             println "Docker image build failed"
+                             println "Docker image build is failed"
                              currentBuild.result = 'FAILURE'
                              throw exception
                          }
