@@ -85,8 +85,7 @@ def NextVersion
             
              steps{
                 script{
-                    build job: 'E2E-CI', parameters:  string(name: 'NextVersion', value: String.valueOf(NextVersion))
-                         
+                    build job: 'E2E-CI', parameters: [ string(name: 'triggered_by', value: 'intapi'), string(name:'next_version', value: NextVersion), string(name: 'Image_version', value: 'int_api_' + BuildVersion)]   
                 }
             }
 
