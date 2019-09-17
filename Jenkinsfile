@@ -81,6 +81,16 @@ def NextVersion
                  }
              }
          }
+         stage('Triggering E2E-CI job'){
+            
+             steps{
+                script{
+                    build job: 'E2E-CI', parameters:  string(name: 'NextVersion', value: String.valueOf(NextVersion))
+                         
+                }
+            }
+
+        }
 
      }
  }
