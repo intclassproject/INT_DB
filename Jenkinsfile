@@ -36,7 +36,7 @@ def NextVersion
          }
          stage('UT') {
              steps {
-                 println('Will be added soon ')
+                 println('Will be added soon ') 
 
              }
          }
