@@ -1,10 +1,8 @@
 #!/bin/bash
 set -Eeuo pipefail
-
 if [ "${1:0:1}" = '-' ]; then
 	set -- mongod "$@"
 fi
-
 originalArgOne="$1"
 
 # allow the container to be started with `--user`

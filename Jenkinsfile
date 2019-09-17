@@ -1,8 +1,12 @@
- 
+import hudson.model.*
 import groovy.json.JsonSlurper
 def BuildVersion
 def Current_version
 def NextVersion
+def dev_rep_docker = 'devopsint/dev'
+def colons = ':'
+def underscore = '_'
+def module = 'intdb'
  pipeline {
 
      options {
@@ -47,7 +51,7 @@ def NextVersion
                  script {
                      dir('INT_DB') {
                          try {
-                           docker.build("db:$BuildVersion")
+                           docker.build("$module$colons$BuildVersion")
                            println("Docker image is successfully built")  
 
                          }
@@ -70,8 +74,8 @@ def NextVersion
                      try{
                          withCredentials([usernamePassword(credentialsId: 'docker-cred-id', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                                 sh "docker login -u=${DOCKER_USERNAME} -p=${DOCKER_PASSWORD}"
-                                sh "docker tag db:$BuildVersion devopsint/dev:db_$BuildVersion"
-                                sh "docker push devopsint/dev:db_$BuildVersion"
+                                sh "docker tag $module:$BuildVersion $dev_rep_docker$colons$module$underscore$BuildVersion"
+                                sh "docker push $dev_rep_docker$colons$module$underscore$BuildVersion"
                                 
                          }
                          }
@@ -86,15 +90,19 @@ def NextVersion
          stage('Triggering E2E-CI job'){
             
              steps{
-                script{
-                    build job: 'E2E-CI', parameters: [ string(name: 'triggered_by', value: 'intapi'), string(name:'next_version', value: NextVersion), string(name: 'Image_version', value: 'intdb' + BuildVersion)]   
+                script {
+                    node('master') {
+                    build job: 'E2E-CI', parameters: [string(name: 'triggered_by', value: module), string(name: 'next_version', value: NextVersion), string(name: 'Image_version', value: dev_rep_docker + colons + module + underscore  + BuildVersion)]
+                }
+
+                    }
+
+
                 }
             }
-
         }
 
      }
- }
 def Return_Json_From_File(file_name){
     return new JsonSlurper().parse(new File(file_name))
 }
